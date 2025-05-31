@@ -28,12 +28,17 @@ openai.api_base = "https://models.github.ai/inference"
 
 
 def GPT_response(text):
+    prompt = f""" 
+        你是一個友善且精簡的助理，請用繁體中文回覆，語氣自然溫暖。
+        適度加入 Emoji 增添親切感。回答應簡短、有重點，避免冗長。
+    """
     # 接收回應
     # response = openai.Completion.create(model="gpt-3.5-turbo-instruct", prompt=text, temperature=0.5, max_tokens=500)
     response = openai.ChatCompletion.create(
         model="openai/gpt-4o",
         messages=[
-            {"role": "system", "content": text}
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": text},
         ]
     )
     print(response)
