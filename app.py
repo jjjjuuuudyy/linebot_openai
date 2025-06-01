@@ -100,27 +100,45 @@ if __name__ == "__main__":
 
 
 #========MQTT相關==========
-from mqtt import send_mqtt
+from mqtt import send_mqtt, send_mqtt_message
 
-MQTT_TOPIC_LED = "judy0528/class304/led"
+# MQTT_TOPIC_LED = "judy0528/class304/led"
+# @handler.add(MessageEvent, message=TextMessage)
+# def handle_message(event):
+#     msg = event.message.text
+
+#     try:
+#         if msg == "開啟LED":
+#             send_mqtt(MQTT_TOPIC_LED, "ON")
+#             line_bot_api.reply_message(event.reply_token, TextSendMessage("🟢 已開啟 LED"))
+#             return
+#         elif msg == "關閉LED":
+#             send_mqtt(MQTT_TOPIC_LED, "OFF")
+#             line_bot_api.reply_message(event.reply_token, TextSendMessage("⚪ 已關閉 LED"))
+#             return
+
+#         # 其他訊息
+#         line_bot_api.reply_message(event.reply_token, TextSendMessage("未授權的指令"))
+
+#     except Exception as e:
+#         print(traceback.format_exc())
+#         line_bot_api.reply_message(event.reply_token, TextSendMessage("發生錯誤，請稍後再試。"))
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
-
     try:
+        # 偵測訊息內容並觸發 MQTT
         if msg == "開啟LED":
-            send_mqtt(MQTT_TOPIC_LED, "ON")
-            line_bot_api.reply_message(event.reply_token, TextSendMessage("🟢 已開啟 LED"))
-            return
+            send_mqtt_message("192.168.117.16", "judy0528/class304/led", "ON")
+            reply_text = "🟢 已開啟 LED"
         elif msg == "關閉LED":
-            send_mqtt(MQTT_TOPIC_LED, "OFF")
-            line_bot_api.reply_message(event.reply_token, TextSendMessage("⚪ 已關閉 LED"))
-            return
-
-        # 其他訊息
-        line_bot_api.reply_message(event.reply_token, TextSendMessage("未授權的指令"))
-
+            send_mqtt_message("192.168.117.16", "judy0528/class304/led", "OFF")
+            reply_text = "⚪ 已關閉 LED"
+        else:
+            reply_text = "未授權的指令"
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(reply_text))
     except Exception as e:
         print(traceback.format_exc())
-        line_bot_api.reply_message(event.reply_token, TextSendMessage("發生錯誤，請稍後再試。"))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("❗系統錯誤，請稍後再試"))
 #========MQTT相關==========
